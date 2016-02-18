@@ -1,0 +1,10 @@
+ : cannot connect to X server localhost:10.0
+     pcost       dcost       gap    pres   dres
+ 0: -3.3928e+02 -9.7655e+02  6e+02  6e-13  2e+00
+ 1: -4.1346e+02 -4.2477e+02  1e+01  5e-13  3e-01
+ 2: -4.4926e+02 -4.5135e+02  2e+00  5e-14  1e-16
+ 3: -4.4926e+02 -4.4928e+02  2e-02  5e-13  1e-16
+ 4: -4.4926e+02 -4.4926e+02  2e-04  2e-13  1e-16
+Optimal solution found.
+2498 support vectors out of 2498 points
+1121 out of 1249 predictions correct

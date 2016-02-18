@@ -1,0 +1,21 @@
+     pcost       dcost       gap    pres   dres
+ 0: -3.4933e+02 -1.0004e+03  7e+02  2e-13  2e+00
+ 1: -4.2736e+02 -4.3707e+02  1e+01  3e-13  3e-01
+ 2: -4.6509e+02 -4.6700e+02  2e+00  7e-13  1e-16
+ 3: -4.6509e+02 -4.6511e+02  2e-02  2e-12  1e-16
+ 4: -4.6509e+02 -4.6510e+02  2e-04  4e-12  9e-17
+Optimal solution found.
+2499 support vectors out of 2499 points
+1118 out of 1248 predictions correct
+Traceback (most recent call last):
+  File "svm.py", line 293, in <module>
+    test_non_linear()
+  File "svm.py", line 269, in test_non_linear
+    plot_contour(X_train[y_train==1], X_train[y_train==-1], clf)
+  File "svm.py", line 186, in plot_contour
+    Z = clf.project(X).reshape(X1.shape)
+  File "svm.py", line 87, in project
+    s += a * sv_y * self.kernel(X[i], sv)
+  File "svm.py", line 16, in gaussian_kernel
+    return np.exp(-linalg.norm(x-y)**2 / (2 * (sigma ** 2)))
+ValueError: operands could not be broadcast together with shapes (2,) (16,) 
