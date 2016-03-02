@@ -52,6 +52,48 @@ We use the \emph{cudarray} library to implement our method on the GPU to acceler
   \caption{SGD-based matrix completion diagram.\label{fig:sgd}}
 \end{figure}
 
+
+\section{SVD Method} 
+We use Singular Value Decomposition method as our matrix factorization approaches to unsupervised learning. Let $A$ be the training dataset with row ordered as user id and column as movie id. The entries of $A$ will be the rating, a latent variable, from 1-5. We decompose $A$ using SVD, that is, $A=UWV^T$
+\begin{equation}
+\begin{bmatrix}
+&&&\\
+&A&\\
+&&&\\
+\end{bmatrix}=\begin{bmatrix}
+&&&\\
+&U&\\
+&&&\\
+\end{bmatrix}
+\begin{bmatrix}
+w_1&&\\
+&\vdots&\\
+&&w_n\\
+\end{bmatrix}
+\begin{bmatrix}
+&&&\\
+&V&\\
+&&&\\
+\end{bmatrix}^T
+\end{equation}
+Where $\begin{bmatrix}
+w_1&&\\
+&\vdots&\\
+&&w_n\\
+\end{bmatrix}$ corresponds to the eigenvalues of $A$. \\
+
+Next thing we want to do is the have a good approximation of $A$. The criterian of such aprroximation matrix is that 
+\[\min_{X}||A-X||_F: \textbf{rank}(X)=k \]
+We set all but the largest $k$ singular values to zero since the other smalle eigenvalues are almost neglectable. So a best $k$-rank approximation $\hat{A}_k$ is given by zeroing out the $r-k$ trailing singular values of $A$, that is 
+\[\hat{A}_k=U\hat{S}_kV^T, \hat{S}_k=\textbf{diag}(\sigma_1,...\sigma_k,0,...0)\]
+
+The minimal error is given by the Euclidean norm of the singular values that have been zerored out in the process: 
+\[||A-\hat{A}_k||_F=\sqrt{\sigma_{k+1}^2+...+\sigma_{\tau}^2}\]
+
+
+Here we use Python to implement SVD method. We also use the package \textit{sklearn.utils.extmath} function SVD to get the decomposed matrices. Based on the eigenvalue plots, we set $K=23$ as our 23 largest eigenvalues.
+
+
 \section{Appendix}
 \label{code}
 \paragraph{SGD code}
@@ -111,4 +153,52 @@ if __name__ == "__main__":
     Z = nR[Y[:,0],Y[:,1]]
     np.savetxt('preds.txt, Z, delimiter = '\n')
 \end{verbatim}  
+
+\paragraph{SVD code}
+\begin{verbatim}
+#
+try:
+    import numpy as np
+except:
+    print "This implementation requires the numpy module."
+    exit(0)
+
+import csv
+import scipy.sparse as sparse
+import os
+import matplotlib.pyplot as plt
+from sklearn.utils.extmath import randomized_svd
+from sklearn import cross_validation
+
+
+
+def SVD(R, K):
+    U, s, VT = randomized_svd(R, n_components = K, n_iter=6, random_state=3)	
+    S = np.diag(s)
+    return U, S, VT
+##############################################################################
+
+
+if __name__ == "__main__":
+
+    X = np.loadtxt('train.csv', delimiter = ',', usecols = (0,1,2), skiprows = 1)
+    Y = np.loadtxt('test.csv', delimiter = ',', usecols = (0,1), skiprows = 1, dtype=int)
+
+    shape = tuple(X.max(axis=0)[:2]+1)
+    R = sparse.coo_matrix((X[:,2], (X[:,0], X[:,1])), shape = shape, dtype = float)
+    R = R.todense()
+    R = np.array(R)
+    mask = np.divide(np.array(R, dtype=int), np.array(R, dtype=int))
+    N = len(R)
+    M = len(R[0])
+    K = 23
+    mean = np.mean(R)+3.
+    r = R + mean -np.multiply(mask,3)#- np.multiply(mask, Z+mean)
+    U, S, VT = SVD(r, K)
+    result = np.around(np.array(np.dot(U, np.dot(S,VT))))
+
+    Z = result[Y[:,0],Y[:,1]]
+    np.savetxt('svd_test.csv', Z, delimiter = '\n')
+
+\end{verbatim}
 \end{document}
