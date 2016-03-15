@@ -11,6 +11,7 @@ n_samples, n_features = X.shape
 
 # PCA computation
 X -= np.mean(X, axis = 0)
+X -= X.mean(axis=1).reshape(n_samples,-1)
 cov = np.dot(X.T, X) / X.shape[0] # get the data covariance matrix
 U,S,V = np.linalg.svd(cov)
 print(U.shape)
